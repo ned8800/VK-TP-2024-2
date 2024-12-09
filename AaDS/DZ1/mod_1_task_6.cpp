@@ -34,9 +34,9 @@
 #include <math.h>
 using namespace std;
 
-template<typename T>
+template<typename Key>
 struct DefaultComparator {
-	bool operator()(const T& left, const T& right) const {
+	bool operator()(const Key& left, const Key& right) const {
 		return left < right;
 	}
 };
@@ -46,11 +46,11 @@ int randomizer(int l, int r) {
 }
 
 
-template <typename T, typename Comparator = DefaultComparator<T>>
-int partition(T *arr, int l, int r, Comparator cmp = Comparator()) {
+template <typename Key, typename Comparator = DefaultComparator<Key>>
+int partition(Key *arr, int l, int r, Comparator cmp = Comparator()) {
     int pivot_idx = int(randomizer(l ,r));
 	
-    T pivot = arr[pivot_idx];
+    Key pivot = arr[pivot_idx];
     
 	std::swap(arr[pivot_idx], arr[l]);
 	
@@ -75,8 +75,8 @@ int partition(T *arr, int l, int r, Comparator cmp = Comparator()) {
 
 
 ///////////////////////////////////////////////////////////////////////////////
-template <typename T, typename Comparator = DefaultComparator<T>>
-void kth_stat(T *arr, int arr_size, int k, Comparator cmp = Comparator()) {
+template <typename Key, typename Comparator = DefaultComparator<Key>>
+void kth_stat(Key *arr, int arr_size, int k, Comparator cmp = Comparator()) {
 	int left = 0;
 	int right = arr_size;
 	

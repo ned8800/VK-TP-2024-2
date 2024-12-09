@@ -17,16 +17,16 @@ N целых чисел, разделенных пробелом.
 #include <queue>
 #include <vector>
 
-template<class T>
+template<class Key>
 struct BinTreeNode {
-    BinTreeNode(const T &element) : data(element), left(nullptr), right(nullptr) {};
+    BinTreeNode(const Key &element) : data(element), left(nullptr), right(nullptr) {};
 
-    T data;
+    Key data;
     BinTreeNode *left = nullptr;
     BinTreeNode *right = nullptr;
 };
 
-template<class T>
+template<class Key>
 class BinTree {
 public:
     BinTree() : root(nullptr) {}
@@ -34,10 +34,11 @@ public:
     // поэтому я и не стал
 
     ~BinTree() {
-        std::queue<BinTreeNode<T> *> queueToDeleteElements;
+        // Удаляем по post-order
+        std::queue<BinTreeNode<Key> *> queueToDeleteElements;
         queueToDeleteElements.push(root);
         while (!queueToDeleteElements.empty()) {
-            BinTreeNode<T> *current = queueToDeleteElements.front();
+            BinTreeNode<Key> *current = queueToDeleteElements.front();
             if (current->left) {
                 queueToDeleteElements.push(current->left);
             }
@@ -49,13 +50,13 @@ public:
         }
     }
 
-    void add(const T &element) {
+    void add(const Key &element) {
         if (root == nullptr) {
             root = new BinTreeNode(element);
             return;
         } 
 
-        BinTreeNode<T> *treeNode = root;
+        BinTreeNode<Key> *treeNode = root;
         while (true) {
             if (treeNode->data <= element) {
                 if (treeNode->right == nullptr) {
@@ -75,16 +76,16 @@ public:
     }
 
 
-    std::queue<T> extractAllLevelOrder() {
-        std::queue<T> tempQueue;
+    std::queue<Key> extractAllLevelOrder() {
+        std::queue<Key> tempQueue;
         if (!root) {
             return tempQueue;
         }
         
-        std::queue<BinTreeNode<T> *> binNodeQueue;
+        std::queue<BinTreeNode<Key> *> binNodeQueue;
         binNodeQueue.push(root);
         while (!binNodeQueue.empty()) {
-            BinTreeNode<T> *node = binNodeQueue.front();
+            BinTreeNode<Key> *node = binNodeQueue.front();
             binNodeQueue.pop();
             tempQueue.push(node->data);
             if (node->left) {
@@ -98,7 +99,7 @@ public:
     }
 
 private:
-    BinTreeNode<T> *root = nullptr;
+    BinTreeNode<Key> *root = nullptr;
 };
 
 

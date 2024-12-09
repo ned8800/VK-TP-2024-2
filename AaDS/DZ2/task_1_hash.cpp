@@ -63,12 +63,12 @@ private:
     int hasherMultiplyer = HASHER_MULTIPLYER;
 };
 
-template<class T, class H>
+template<class Key, class H>
 class HashTable {
 public:
     HashTable() = delete;
 
-    HashTable(const H &hasher, T emptyValue, T deletedValue) :
+    HashTable(const H &hasher, Key emptyValue, Key deletedValue) :
             hasher(hasher),
             table(START_HASH_CAPACITY, emptyValue),
             emptyValue(std::move(emptyValue)),
@@ -91,14 +91,14 @@ public:
         return *this;
     }
 
-    bool insert(const T &key) {
+    bool insert(const Key &key) {
         if(((size*4)/table.size()) >= (3)) { // проверка на заполнение на 3/4
             grow();
         }
         int hash1 = hasher(key) % table.size();
         // второй хеш с значением множителя ADDITIONAL_HASHER_MULTIPLYER
         int mult = (hasher(key, ADDITIONAL_HASHER_MULTIPLYER)*2 + 1) % table.size();
-        if (table[hash1] == emptyValue || table[hash1] == deletedValue) {
+        if (table[hash1] == emptyValue) {
             table[hash1] = key;
             ++size;
             return true;
@@ -106,22 +106,34 @@ public:
         if (table[hash1] == key) {
             return false;
         }
+
+        int cellDeletedIdx = -1;
         
-        for (int i = 1; i != table.size(); ++i) {
+        for (int i = 1; i != table.size(); i++) {
             int probeIndex = (hash1 + i * mult) % table.size();
             if (table[probeIndex] == key) {
                 return false;
             }
-            if (table[probeIndex] == emptyValue || table[probeIndex] == deletedValue) {
+            if (table[probeIndex] == emptyValue) {
                 table[probeIndex] = key;
                 ++size;
                 return true;
             }
+            if ((table[probeIndex] == deletedValue) && (cellDeletedIdx == -1)) {
+                cellDeletedIdx = probeIndex;                
+            }
         }
+
+        if (cellDeletedIdx != -1) {
+            table[cellDeletedIdx] = key;
+            ++size;
+            return true;
+        }
+
         return false;
     }
 
-    bool contains(const T &key) {
+    bool contains(const Key &key) {
         int hash1 = hasher(key) % table.size();
         int mult = (hasher(key, 11)*2 + 1) % table.size();
         if (table[hash1] == key) {
@@ -142,7 +154,7 @@ public:
         return false;
     }
 
-    bool remove(const T &key) {
+    bool remove(const Key &key) {
         int hash1 = hasher(key) % table.size();
         int mult = (hasher(key, 11)*2 + 1) % table.size();
         if (table[hash1] == key) {
@@ -168,15 +180,15 @@ public:
     }
 
 private:
-    std::vector<T> table;
+    std::vector<Key> table;
     int size = 0;
     H hasher;
-    T emptyValue;
-    T deletedValue;
+    Key emptyValue;
+    Key deletedValue;
 
     void grow() {
-        std::vector<T> newTable(table.size() * 2, emptyValue);
-        std::vector<T> oldTable = std::move(table);
+        std::vector<Key> newTable(table.size() * 2, emptyValue);
+        std::vector<Key> oldTable = std::move(table);
         table = std::move(newTable);
         for (const auto &key: oldTable) {
             if (key != emptyValue && key != deletedValue) {
