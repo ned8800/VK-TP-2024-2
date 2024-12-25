@@ -8,7 +8,7 @@
 
 Дан базовый интерфейс для представления ориентированного графа:
 
-***code
+``` code
 struct IGraph {
 virtual ~IGraph() {}
 	
@@ -20,7 +20,7 @@ virtual void AddEdge(int from, int to) = 0;
 virtual std::vector<int> GetNextVertices(int vertex) const = 0;
 virtual std::vector<int> GetPrevVertices(int vertex) const = 0;
 };
-***
+```
 
 Необходимо написать несколько реализаций интерфейса:
 ListGraph, хранящий граф в виде массива списков смежности,
